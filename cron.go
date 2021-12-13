@@ -1,6 +1,7 @@
 package cron
 
 import (
+	"fmt"
 	"log"
 	"runtime"
 	"sort"
@@ -105,6 +106,7 @@ func (c *Cron) AddFunc(spec string, cmd func()) error {
 func (c *Cron) AddJob(spec string, cmd Job) error {
 	schedule, err := Parse(spec)
 	if err != nil {
+		fmt.Println("Parse spec is err : ", err)
 		return err
 	}
 	c.Schedule(schedule, cmd)
@@ -175,9 +177,11 @@ func (c *Cron) runWithRecovery(j Job) {
 func (c *Cron) run() {
 	// Figure out the next activation times for each entry.
 	now := c.now()
+	fmt.Println("now is : ", now)
 	for _, entry := range c.entries {
 		entry.Next = entry.Schedule.Next(now)
 	}
+	fmt.Println("entries length is : ", len(c.entries))
 
 	for {
 		// Determine the next entry to run.
